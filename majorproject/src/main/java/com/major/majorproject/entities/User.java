@@ -1,5 +1,6 @@
 package com.major.majorproject.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -41,6 +42,10 @@ public class User implements UserDetails {
 
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @JsonIgnore
+    @OneToMany(mappedBy= "user",cascade=CascadeType.ALL)
+    private List<Bookings> bookingList;//you can use new ArrayList for it to display
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -55,7 +55,7 @@ public class SecurityConfiguration {
                                 "/v2/api-doc")
                         .permitAll()
                         .requestMatchers("/api/user/**").hasAuthority(Role.USER.name())
-                        .requestMatchers("/api/doctor/**").hasAuthority(Role.ADMIN.name())
+                        .requestMatchers("/api/admin/**").hasAuthority(Role.ADMIN.name())
                         .anyRequest()
                         .authenticated())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
