@@ -88,16 +88,37 @@ public class CustomerService {
     }
 
     public List<Bookings> getBookingsByUserId(int userId) {
+
         return bookingsRepository.findBookingsByUserId(userId);
     }
 
     public String cancelBookingsByBookingsId(int bookingsId){
-        Bookings bookings=bookingsRepository.findById(bookingsId).get();
-        BusData busData=busDataRepository.findById(bookings.getBusData().getBusId()).get();
-        int finalSeats=busData.getNoOfSeatsAvailable()+bookings.getNoOfTickets();
+        Bookings bookings = bookingsRepository.findById(bookingsId)
+                .orElseThrow(() -> new RuntimeException("Booking not found"));
+
+        BusData busData = busDataRepository.findById(bookings.getBusData().getBusId())
+                .orElseThrow(() -> new RuntimeException("Bus not found"));
+
+        // Increase available seats
+        int finalSeats = busData.getNoOfSeatsAvailable() + bookings.getNoOfTickets();
         busData.setNoOfSeatsAvailable(finalSeats);
         busDataRepository.save(busData);
         bookingsRepository.deleteById(bookingsId);
-        return "Booking successfully cancelled";
+
+        // Prepare cancellation email content
+        String subject = "Booking Cancellation Confirmation";
+        String body = "Dear Customer,\n\nYour booking with ID " + bookingsId +
+                " has been successfully cancelled.\n\nThank you for using our service.";
+
+        // Send cancellation email
+        emailService.sendBookingCancellation(bookings.getUser().getEmail(), subject, body);
+
+        if(bookingsRepository.existsById(bookingsId)){
+            return "Sorry, not able to cancel the booking.";
+        } else {
+            return "Booking successfully cancelled.";
+        }
     }
+
 }
+

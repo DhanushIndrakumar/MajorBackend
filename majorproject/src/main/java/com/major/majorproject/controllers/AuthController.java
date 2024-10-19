@@ -1,7 +1,10 @@
 package com.major.majorproject.controllers;
 
+import com.major.majorproject.DTO.DetailsToken;
 import com.major.majorproject.DTO.LoginRequest;
 import com.major.majorproject.DTO.RegisterRequest;
+import com.major.majorproject.DTO.RegisterResponse;
+import com.major.majorproject.entities.User;
 import com.major.majorproject.repositories.UserRepository;
 import com.major.majorproject.service.JWTService;
 import com.major.majorproject.service.UserCommonService;
@@ -45,5 +48,21 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest){
         return ResponseEntity.ok(userCommonService.login(loginRequest));
+    }
+
+    @PostMapping("/getDetailsByToken")
+    public RegisterResponse getDetails(@RequestBody DetailsToken detailsToken) {
+        String token = detailsToken.getToken();
+        String userEmail = jwtService.extractUserName(token);
+        System.out.println(userEmail);
+        User user = userRepository.findByEmail(userEmail).orElseThrow(() -> new RuntimeException("User not found"));
+        System.out.println("user:" + user.getUserId());
+        RegisterResponse registerResponse = new RegisterResponse();
+        registerResponse.setUserId(user.getUserId());
+        registerResponse.setUserName(user.getUserName());
+        registerResponse.setEmail(user.getEmail());
+        registerResponse.setPhone(user.getPhone());
+        registerResponse.setRole(user.getRole());
+        return registerResponse;
     }
 }

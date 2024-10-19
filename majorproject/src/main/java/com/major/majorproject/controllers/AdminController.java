@@ -2,6 +2,7 @@ package com.major.majorproject.controllers;
 
 
 import com.major.majorproject.DTO.BusRequest;
+import com.major.majorproject.DTO.CompleteBookingsDTO;
 import com.major.majorproject.entities.Bookings;
 import com.major.majorproject.entities.BusData;
 import com.major.majorproject.service.AdminService;
@@ -63,7 +64,7 @@ public class AdminController {
             summary="Admin can retrieve all the bookings done by the customers"
     )
     @GetMapping("/getBookings")
-    public List<Bookings> getBookings(){
+    public List<CompleteBookingsDTO> getBookings(){
         return adminService.getBookings();
     }
 

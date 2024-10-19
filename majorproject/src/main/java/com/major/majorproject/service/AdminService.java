@@ -2,6 +2,7 @@ package com.major.majorproject.service;
 
 
 import com.major.majorproject.DTO.BusRequest;
+import com.major.majorproject.DTO.CompleteBookingsDTO;
 import com.major.majorproject.entities.Bookings;
 import com.major.majorproject.entities.BusData;
 import com.major.majorproject.repositories.BookingsRepository;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class AdminService {
@@ -60,7 +62,23 @@ public class AdminService {
         return busDataRepository.findAll();
     }
 
-    public List<Bookings> getBookings() {
-        return bookingsRepository.findAll();
+    public List<CompleteBookingsDTO> getBookings() {
+        List<Bookings> bookingsList = bookingsRepository.findAll();
+        return bookingsList.stream().map(this::convertToDTO).collect(Collectors.toList());
+    }
+
+    private CompleteBookingsDTO convertToDTO(Bookings bookings) {
+        CompleteBookingsDTO dto = new CompleteBookingsDTO();
+        dto.setBookingsId(bookings.getBookingsId());
+        dto.setDepartureTime(bookings.getDepartureTime());
+        dto.setDepartureDate(bookings.getDepartureDate());
+        dto.setNoOfTickets(bookings.getNoOfTickets());
+        dto.setTotalCalculated(bookings.getTotalCalculated());
+        dto.setSource(bookings.getSource());
+        dto.setDestination(bookings.getDestination());
+        dto.setBusName(bookings.getBusName());
+        dto.setUserId(bookings.getUser().getUserId());  // Retrieve userId
+        dto.setBusId(bookings.getBusData().getBusId());  // Retrieve busId
+        return dto;
     }
 }
